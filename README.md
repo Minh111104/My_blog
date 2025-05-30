@@ -77,6 +77,9 @@ Visit `http://localhost:5000` in your browser.
 - Set all environment variables in your dashboard.
 - Use PostgreSQL for production.
 
+**Live Demo:**  
+👉 [https://m-talks.onrender.com](https://m-talks.onrender.com)
+
 ## 👤 Admin Access
 
 - The **first registered user** becomes the admin (id=1).
