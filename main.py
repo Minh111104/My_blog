@@ -13,12 +13,34 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 import smtplib
 import os
 from dotenv import load_dotenv
+import re
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
+
+# Custom Jinja filter to strip HTML tags and truncate text
+@app.template_filter('clean_excerpt')
+def clean_excerpt(text, length=150):
+    # Remove HTML tags
+    clean_text = re.sub(r'<[^>]+>', '', text)
+    # Remove HTML entities
+    clean_text = clean_text.replace('&nbsp;', ' ')
+    clean_text = clean_text.replace('&amp;', '&')
+    clean_text = clean_text.replace('&lt;', '<')
+    clean_text = clean_text.replace('&gt;', '>')
+    clean_text = clean_text.replace('&quot;', '"')
+    clean_text = clean_text.replace('&#39;', "'")
+    # Handle common entities
+    clean_text = re.sub(r'&[a-zA-Z]+;', '', clean_text)
+    clean_text = re.sub(r'&#\d+;', '', clean_text)
+    # Truncate to specified length
+    if len(clean_text) > length:
+        clean_text = clean_text[:length].rsplit(' ', 1)[0] + '...'
+    return clean_text
+
 
 # Configure Flask-Login
 login_manager = LoginManager()
@@ -173,7 +195,7 @@ def logout():
 
 @app.route('/')
 def get_all_posts():
-    result = db.session.execute(db.select(BlogPost))
+    result = db.session.execute(db.select(BlogPost).order_by(BlogPost.id.desc()))
     posts = result.scalars().all()
     return render_template("index.html", all_posts=posts, current_user=current_user)
 
