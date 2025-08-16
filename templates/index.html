@@ -16,34 +16,85 @@
     </div>
   </div>
 </header>
+
 <!-- Main Content-->
 <div class="container px-4 px-lg-5">
   <div class="row gx-4 gx-lg-5 justify-content-center">
     <div class="col-md-10 col-lg-8 col-xl-7">
-      <!-- Post preview-->
-      {% for post in all_posts %}
-      <div class="post-preview">
-        <a href="{{ url_for('show_post', post_id=post.id) }}">
-          <h2 class="post-title">{{ post.title }}</h2>
-          <h3 class="post-subtitle">{{ post.subtitle }}</h3>
-        </a>
-        <p class="post-meta">
-          Posted by
-          <!-- post.author.name is now a User object -->
-          <a href="#">{{post.author.name}}</a>
-          on {{post.date}}
-          <!-- Only show delete button if user id is 1 (admin user) -->
-          {% if current_user.id == 1: %}
-          <a href="{{url_for('delete_post', post_id=post.id) }}">✘</a>
-          {% endif %}
-        </p>
+      
+      <!-- Search Bar -->
+      <div class="search-section mb-4">
+        <div class="search-container">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search posts...">
+          <button class="search-btn" onclick="searchPosts()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        </div>
       </div>
-      <!-- Divider-->
-      <hr class="my-4" />
+      
+      <!-- Featured Post (Newest) -->
+      {% if all_posts %}
+      <div class="featured-post mb-5">
+        <div class="post-card featured">
+          <div class="post-image">
+            <img src="{{ all_posts[0].img_url }}" alt="{{ all_posts[0].title }}" class="img-fluid">
+            <div class="featured-badge">NEWEST</div>
+          </div>
+          <div class="post-content">
+            <div class="post-meta-top">
+              <span class="post-date">{{ all_posts[0].date }}</span>
+              <span class="post-author">by {{ all_posts[0].author.name }}</span>
+            </div>
+            <h2 class="post-title">
+              <a href="{{ url_for('show_post', post_id=all_posts[0].id) }}">{{ all_posts[0].title }}</a>
+            </h2>
+            <h3 class="post-subtitle">{{ all_posts[0].subtitle }}</h3>
+            <p class="post-excerpt">{{ all_posts[0].body|clean_excerpt(150) }}</p>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="reading-time">📖 5 min read</span>
+                <span class="post-category">💭 Personal</span>
+              </div>
+              <a href="{{ url_for('show_post', post_id=all_posts[0].id) }}" class="read-more-btn">Read More →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Other Posts -->
+      {% for post in all_posts[1:] %}
+      <div class="post-card">
+        <div class="post-content">
+          <div class="post-meta-top">
+            <span class="post-date">{{ post.date }}</span>
+            <span class="post-author">by {{ post.author.name }}</span>
+          </div>
+          <h2 class="post-title">
+            <a href="{{ url_for('show_post', post_id=post.id) }}">{{ post.title }}</a>
+          </h2>
+          <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+          <p class="post-excerpt">{{ post.body|clean_excerpt(120) }}</p>
+          <div class="post-footer">
+            <div class="post-stats">
+              <span class="reading-time">📖 3 min read</span>
+              <span class="post-category">💭 Personal</span>
+            </div>
+            <div class="post-actions">
+              <a href="{{ url_for('show_post', post_id=post.id) }}" class="read-more-btn">Read More →</a>
+              {% if current_user.id == 1: %}
+              <a href="{{url_for('delete_post', post_id=post.id) }}" class="delete-btn" title="Delete Post">✘</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
       {% endfor %}
 
       <!-- New Post -->
-      <!-- Only show Create Post button if user id is 1 (admin user) -->
       {% if current_user.id == 1: %}
       <div class="d-flex justify-content-end mb-4">
         <a
@@ -61,5 +112,12 @@
     </div>
   </div>
 </div>
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top" onclick="scrollToTop()" title="Back to Top">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+</button>
 
 {% include "footer.html" %}
