@@ -49,10 +49,18 @@ function searchPosts() {
         const excerpt = card.querySelector('.post-excerpt').textContent.toLowerCase();
         const author = card.querySelector('.post-author').textContent.toLowerCase();
         
+        // Get all tags for this post
+        const tagElements = card.querySelectorAll('.post-category');
+        let tags = '';
+        tagElements.forEach(tag => {
+            tags += tag.textContent.toLowerCase() + ' ';
+        });
+        
         if (title.includes(searchTerm) || 
             subtitle.includes(searchTerm) || 
             excerpt.includes(searchTerm) || 
-            author.includes(searchTerm)) {
+            author.includes(searchTerm) ||
+            tags.includes(searchTerm)) {
             card.style.display = 'block';
             card.style.animation = 'fadeInUp 0.6s ease-out';
             foundPosts++;
