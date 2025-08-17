@@ -44,44 +44,33 @@ def clean_excerpt(text, length=150):
 # Custom Jinja filter to calculate reading time
 @app.template_filter('reading_time')
 def reading_time(text):
-    # Remove HTML tags for accurate word count
-    clean_text = re.sub(r'<[^>]+>', '', text)
-    # Count words (split by whitespace)
-    word_count = len(clean_text.split())
-    # Average reading speed: 200 words per minute
-    reading_minutes = max(1, round(word_count / 200))
-    return reading_minutes
+    try:
+        if not text:
+            return 1
+        # Remove HTML tags for accurate word count
+        clean_text = re.sub(r'<[^>]+>', '', text)
+        # Count words (split by whitespace)
+        word_count = len(clean_text.split())
+        # Average reading speed: 200 words per minute
+        reading_minutes = max(1, round(word_count / 200))
+        return reading_minutes
+    except:
+        return 1
 
 # Custom Jinja filter to get post tags
 @app.template_filter('get_tags')
 def get_tags(tags_string):
-    if not tags_string:
-        return []
-    # Split by comma and clean up whitespace
-    tags = [tag.strip() for tag in tags_string.split(',') if tag.strip()]
-    return tags
-
-
-def migrate_database():
-    """Safely migrate the database to add new columns"""
     try:
-        with app.app_context():
-            # Simple approach: try to add the column, ignore if it already exists
-            try:
-                db.engine.execute("ALTER TABLE blog_posts ADD COLUMN tags TEXT DEFAULT ''")
-                print("📝 Added tags column to database")
-                
-                # Update existing posts with default tags
-                db.engine.execute("UPDATE blog_posts SET tags = 'Personal' WHERE tags IS NULL OR tags = ''")
-                print("✅ Database migration completed successfully!")
-                
-            except Exception as e:
-                # Column probably already exists, which is fine
-                print("✅ Database schema is up to date (tags column exists)")
-                
-    except Exception as e:
-        print(f"⚠️  Migration warning: {e}")
-        print("This is normal for new databases.")
+        if not tags_string:
+            return []
+        # Split by comma and clean up whitespace
+        tags = [tag.strip() for tag in tags_string.split(',') if tag.strip()]
+        return tags
+    except:
+        return []
+
+
+# Migration function removed for production stability
 
 
 # Configure Flask-Login
@@ -160,8 +149,6 @@ class Comment(db.Model):
 
 with app.app_context():
     db.create_all()
-    # Migration temporarily disabled for production stability
-    # migrate_database()
 
 
 # Create an admin-only decorator
