@@ -55,8 +55,10 @@
             <p class="post-excerpt">{{ all_posts[0].body|clean_excerpt(150) }}</p>
             <div class="post-footer">
               <div class="post-stats">
-                <span class="reading-time">📖 5 min read</span>
-                <span class="post-category">💭 Personal</span>
+                <span class="reading-time">📖 {{ all_posts[0].body|reading_time }} min read</span>
+                {% for tag in all_posts[0].tags|get_tags %}
+                <span class="post-category">🏷️ {{ tag }}</span>
+                {% endfor %}
               </div>
               <a href="{{ url_for('show_post', post_id=all_posts[0].id) }}" class="read-more-btn">Read More →</a>
             </div>
@@ -80,8 +82,10 @@
           <p class="post-excerpt">{{ post.body|clean_excerpt(120) }}</p>
           <div class="post-footer">
             <div class="post-stats">
-              <span class="reading-time">📖 3 min read</span>
-              <span class="post-category">💭 Personal</span>
+              <span class="reading-time">📖 {{ post.body|reading_time }} min read</span>
+              {% for tag in post.tags|get_tags %}
+              <span class="post-category">��️ {{ tag }}</span>
+              {% endfor %}
             </div>
             <div class="post-actions">
               <a href="{{ url_for('show_post', post_id=post.id) }}" class="read-more-btn">Read More →</a>

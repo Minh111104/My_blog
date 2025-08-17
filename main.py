@@ -41,6 +41,51 @@ def clean_excerpt(text, length=150):
         clean_text = clean_text[:length].rsplit(' ', 1)[0] + '...'
     return clean_text
 
+# Custom Jinja filter to calculate reading time
+@app.template_filter('reading_time')
+def reading_time(text):
+    # Remove HTML tags for accurate word count
+    clean_text = re.sub(r'<[^>]+>', '', text)
+    # Count words (split by whitespace)
+    word_count = len(clean_text.split())
+    # Average reading speed: 200 words per minute
+    reading_minutes = max(1, round(word_count / 200))
+    return reading_minutes
+
+# Custom Jinja filter to get post tags
+@app.template_filter('get_tags')
+def get_tags(tags_string):
+    if not tags_string:
+        return []
+    # Split by comma and clean up whitespace
+    tags = [tag.strip() for tag in tags_string.split(',') if tag.strip()]
+    return tags
+
+
+def migrate_database():
+    """Safely migrate the database to add new columns"""
+    try:
+        with app.app_context():
+            # Check if tags column exists
+            inspector = db.inspect(db.engine)
+            columns = [col['name'] for col in inspector.get_columns('blog_posts')]
+            
+            if 'tags' not in columns:
+                print("📝 Adding tags column to database...")
+                # Use raw SQL to add the column
+                db.engine.execute("ALTER TABLE blog_posts ADD COLUMN tags TEXT DEFAULT ''")
+                
+                # Update existing posts with default tags
+                db.engine.execute("UPDATE blog_posts SET tags = 'Personal' WHERE tags IS NULL OR tags = ''")
+                
+                print("✅ Database migration completed successfully!")
+            else:
+                print("✅ Database schema is up to date.")
+                
+    except Exception as e:
+        print(f"⚠️  Migration warning: {e}")
+        print("This is normal for new databases.")
+
 
 # Configure Flask-Login
 login_manager = LoginManager()
@@ -83,6 +128,7 @@ class BlogPost(db.Model):
     date: Mapped[str] = mapped_column(String(250), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
+    tags: Mapped[str] = mapped_column(String(500), nullable=True)  # Store tags as comma-separated string
     # Parent relationship to the comments
     comments = relationship("Comment", back_populates="parent_post")
 
@@ -117,6 +163,7 @@ class Comment(db.Model):
 
 with app.app_context():
     db.create_all()
+    migrate_database()
 
 
 # Create an admin-only decorator
@@ -259,6 +306,7 @@ def add_new_post():
             subtitle=form.subtitle.data,
             body=form.body.data,
             img_url=form.img_url.data,
+            tags=form.tags.data,
             author=current_user,
             date=date.today().strftime("%B %d, %Y")
         )
@@ -277,7 +325,8 @@ def edit_post(post_id):
         subtitle=post.subtitle,
         img_url=post.img_url,
         author=post.author,
-        body=post.body
+        body=post.body,
+        tags=post.tags
     )
     if edit_form.validate_on_submit():
         post.title = edit_form.title.data
@@ -285,6 +334,7 @@ def edit_post(post_id):
         post.img_url = edit_form.img_url.data
         post.author = current_user
         post.body = edit_form.body.data
+        post.tags = edit_form.tags.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
     return render_template("make-post.html", form=edit_form, is_edit=True, current_user=current_user)
