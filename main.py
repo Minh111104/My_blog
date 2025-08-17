@@ -6,7 +6,7 @@ from flask_gravatar import Gravatar
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
@@ -238,9 +238,12 @@ def logout():
 def get_all_posts():
     try:
         # Use raw SQL to select only existing columns (avoiding the tags column issue)
-        result = db.session.execute("SELECT id, author_id, title, subtitle, date, body, img_url FROM blog_posts ORDER BY id DESC")
+        result = db.session.execute(text("SELECT id, author_id, title, subtitle, date, body, img_url FROM blog_posts ORDER BY id DESC"))
         posts = []
+        print(f"Found {result.rowcount} posts in database")
+        
         for row in result:
+            print(f"Processing post: {row[2]} (ID: {row[0]})")
             # Create a simple object with the data we have
             post_data = {
                 'id': row[0],
@@ -259,16 +262,112 @@ def get_all_posts():
             try:
                 author = db.get_or_404(User, row[1])
                 mock_post.author = author
+                print(f"  - Author: {author.name}")
             except:
                 # If author not found, create a mock author
                 mock_post.author = type('User', (), {'name': 'Unknown Author'})()
+                print(f"  - Author: Unknown Author")
             
             posts.append(mock_post)
+            print(f"  - Post added successfully")
+        
+        print(f"Total posts processed: {len(posts)}")
+        
     except Exception as e:
         # Last resort: return empty list
+        print(f"Error in get_all_posts: {e}")
         posts = []
     
     return render_template("index.html", all_posts=posts, current_user=current_user)
+
+# Migration route to add tags column
+@app.route('/migrate-db')
+def migrate_database():
+    try:
+        # Check database type
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        is_postgresql = 'postgresql' in db_uri
+        
+        if is_postgresql:
+            # Add tags column to PostgreSQL
+            try:
+                db.session.execute(text("ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS tags TEXT DEFAULT 'Personal'"))
+                db.session.commit()
+                
+                # Update existing posts with default tags
+                db.session.execute(text("UPDATE blog_posts SET tags = 'Personal' WHERE tags IS NULL OR tags = ''"))
+                db.session.commit()
+                
+                return """
+                <h1>Database Migration Successful!</h1>
+                <p>✅ Added tags column to blog_posts table</p>
+                <p>✅ Updated existing posts with default 'Personal' tags</p>
+                <p><a href="/">← Back to Homepage</a></p>
+                """
+                
+            except Exception as e:
+                return f"""
+                <h1>Migration Error</h1>
+                <p>❌ Error: {str(e)}</p>
+                <p><a href="/">← Back to Homepage</a></p>
+                """
+        else:
+            return """
+            <h1>Migration Not Needed</h1>
+            <p>This is running locally with SQLite - no migration needed.</p>
+            <p><a href="/">← Back to Homepage</a></p>
+            """
+            
+    except Exception as e:
+        return f"<h1>Migration Error</h1><p>{str(e)}</p>"
+
+# Debug route to check database content
+@app.route('/debug-db')
+def debug_database():
+    try:
+        # Check database type
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        is_postgresql = 'postgresql' in db_uri
+        
+        if is_postgresql:
+            # PostgreSQL - use information_schema
+            tables_result = db.session.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))
+            tables = [row[0] for row in tables_result]
+            
+            columns_result = db.session.execute(text("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'blog_posts'"))
+            columns = [(row[0], row[1]) for row in columns_result]
+        else:
+            # SQLite - use pragma
+            tables_result = db.session.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
+            tables = [row[0] for row in tables_result]
+            
+            # For SQLite, we'll get columns from the model instead
+            columns = [(col.key, str(col.type)) for col in BlogPost.__table__.columns]
+        
+        # Count posts
+        posts_count = db.session.execute(text("SELECT COUNT(*) FROM blog_posts")).scalar()
+        
+        # Count users
+        users_count = db.session.execute(text("SELECT COUNT(*) FROM users")).scalar()
+        
+        return f"""
+        <h1>Database Debug Info</h1>
+        <h2>Database Type:</h2>
+        <p>{'PostgreSQL' if is_postgresql else 'SQLite'}</p>
+        
+        <h2>Tables:</h2>
+        <ul>{''.join([f'<li>{table}</li>' for table in tables])}</ul>
+        
+        <h2>Blog Posts Table Columns:</h2>
+        <ul>{''.join([f'<li>{col[0]} ({col[1]})</li>' for col in columns])}</ul>
+        
+        <h2>Counts:</h2>
+        <p>Posts: {posts_count}</p>
+        <p>Users: {users_count}</p>
+        """
+        
+    except Exception as e:
+        return f"<h1>Database Error</h1><p>{str(e)}</p>"
 
 
 # Add a POST method to be able to post comments
