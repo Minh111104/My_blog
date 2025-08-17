@@ -237,8 +237,8 @@ def logout():
 @app.route('/')
 def get_all_posts():
     try:
-        # Use raw SQL to select only existing columns (avoiding the tags column issue)
-        result = db.session.execute(text("SELECT id, author_id, title, subtitle, date, body, img_url FROM blog_posts ORDER BY id DESC"))
+        # Use raw SQL to select all columns including tags
+        result = db.session.execute(text("SELECT id, author_id, title, subtitle, date, body, img_url, tags FROM blog_posts ORDER BY id DESC"))
         posts = []
         print(f"Found {result.rowcount} posts in database")
         
@@ -253,7 +253,7 @@ def get_all_posts():
                 'date': row[4],
                 'body': row[5],
                 'img_url': row[6],
-                'tags': None  # No tags column yet
+                'tags': row[7] if row[7] else 'Personal'  # Use actual tags from database
             }
             # Create a mock object that mimics the BlogPost structure
             mock_post = type('BlogPost', (), post_data)()
