@@ -69,6 +69,15 @@ def get_tags(tags_string):
     except:
         return []
 
+# Safe way to get tags that works even if column doesn't exist
+def safe_get_tags(post):
+    try:
+        if hasattr(post, 'tags') and post.tags:
+            return get_tags(post.tags)
+        return []
+    except:
+        return []
+
 
 # Migration function removed for production stability
 
