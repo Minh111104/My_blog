@@ -1,5 +1,6 @@
-{% from "bootstrap5/form.html" import render_form %} {% block content %} {%
-include "header.html" %}
+{% from "bootstrap5/form.html" import render_form %} 
+{% block content %} 
+{% include "header.html" %}
 
 <!-- Page Header -->
 <header
@@ -10,8 +11,8 @@ include "header.html" %}
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="page-heading">
-          <h1>Register</h1>
-          <span class="subheading">Start Contributing to the Blog!</span>
+          <h1>Join Our Community</h1>
+          <span class="subheading">Start your blogging journey today</span>
         </div>
       </div>
     </div>
@@ -20,13 +21,79 @@ include "header.html" %}
 
 <main class="mb-4">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-      <!--Rendering the registration form here-->
-      {{render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8 col-sm-12">
+        
+        <!-- Enhanced Register Card -->
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="auth-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <h2 class="auth-title">Create Account</h2>
+            <p class="auth-subtitle">Join thousands of writers sharing their stories</p>
+          </div>
+
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="flash-messages">
+            {% for message in messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endwith %}
+
+          <!-- Register Form -->
+          <div class="auth-form">
+            {{render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+          </div>
+
+          <!-- Additional Options -->
+          <div class="auth-options">
+            <div class="auth-links">
+              <p class="text-center mb-0">
+                Already have an account? 
+                <a href="{{ url_for('login') }}" class="auth-link">Sign in here</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefits Section -->
+          <div class="benefits-section">
+            <h4>Why Join M-Talks?</h4>
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <div class="benefit-icon">✍️</div>
+                <div class="benefit-text">Share Your Stories</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">🌍</div>
+                <div class="benefit-text">Connect Globally</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">📈</div>
+                <div class="benefit-text">Grow Your Audience</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </main>
 
-{% include "footer.html" %} {% endblock %}
+{% include "footer.html" %} 
+{% endblock %}
