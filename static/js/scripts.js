@@ -138,3 +138,24 @@ function scrollToTop() {
         behavior: 'smooth'
     });
 }
+
+// Reading Progress Bar functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.reading-progress-fill');
+    
+    if (progressBar) {
+        window.addEventListener('scroll', function() {
+            // Calculate scroll progress
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Calculate percentage (excluding the viewport height from total)
+            const scrollableHeight = documentHeight - windowHeight;
+            const scrollPercentage = (scrollTop / scrollableHeight) * 100;
+            
+            // Update progress bar width
+            progressBar.style.width = Math.min(scrollPercentage, 100) + '%';
+        });
+    }
+});
