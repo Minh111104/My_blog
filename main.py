@@ -235,11 +235,12 @@ def logout():
 
 
 @app.route('/')
-def get_all_posts():
+@app.route('/page/<int:page>')
+def get_all_posts(page=1):
     try:
         # Use raw SQL to select all columns including tags
         result = db.session.execute(text("SELECT id, author_id, title, subtitle, date, body, img_url, tags FROM blog_posts ORDER BY id DESC"))
-        posts = []
+        all_posts = []
         print(f"Found {result.rowcount} posts in database")
         
         for row in result:
@@ -268,17 +269,36 @@ def get_all_posts():
                 mock_post.author = type('User', (), {'name': 'Unknown Author'})()
                 print(f"  - Author: Unknown Author")
             
-            posts.append(mock_post)
+            all_posts.append(mock_post)
             print(f"  - Post added successfully")
         
-        print(f"Total posts processed: {len(posts)}")
+        print(f"Total posts processed: {len(all_posts)}")
+        
+        # Pagination logic
+        posts_per_page = 5
+        total_posts = len(all_posts)
+        total_pages = (total_posts + posts_per_page - 1) // posts_per_page  # Ceiling division
+        
+        # Validate page number
+        if page < 1:
+            page = 1
+        elif page > total_pages and total_pages > 0:
+            page = total_pages
+        
+        # Calculate start and end indices for slicing
+        start_idx = (page - 1) * posts_per_page
+        end_idx = start_idx + posts_per_page
+        posts = all_posts[start_idx:end_idx]
         
     except Exception as e:
         # Last resort: return empty list
         print(f"Error in get_all_posts: {e}")
         posts = []
+        total_pages = 0
+        page = 1
     
-    return render_template("index.html", all_posts=posts, current_user=current_user)
+    return render_template("index.html", all_posts=posts, current_user=current_user, 
+                         current_page=page, total_pages=total_pages)
 
 # Migration route to add tags column
 @app.route('/migrate-db')
