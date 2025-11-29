@@ -1,5 +1,5 @@
 from datetime import date
-from flask import Flask, abort, render_template, redirect, url_for, flash, request
+from flask import Flask, abort, render_template, redirect, url_for, flash, request, jsonify
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_gravatar import Gravatar
@@ -154,6 +154,16 @@ class Comment(db.Model):
     # Child Relationship to the BlogPosts
     post_id: Mapped[str] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
     parent_post = relationship("BlogPost", back_populates="comments")
+
+
+# Create a table for post likes
+class PostLike(db.Model):
+    __tablename__ = "post_likes"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
+    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
+    # Timestamp of when the like was created
+    created_at: Mapped[str] = mapped_column(String(250), nullable=False)
 
 
 with app.app_context():
@@ -409,7 +419,65 @@ def show_post(post_id):
         )
         db.session.add(new_comment)
         db.session.commit()
-    return render_template("post.html", post=requested_post, current_user=current_user, form=comment_form)
+    
+    # Get like count and check if current user has liked
+    like_count = db.session.execute(
+        text("SELECT COUNT(*) FROM post_likes WHERE post_id = :post_id"),
+        {"post_id": post_id}
+    ).scalar() or 0
+    
+    user_has_liked = False
+    if current_user.is_authenticated:
+        user_like = db.session.execute(
+            text("SELECT * FROM post_likes WHERE post_id = :post_id AND user_id = :user_id"),
+            {"post_id": post_id, "user_id": current_user.id}
+        ).first()
+        user_has_liked = user_like is not None
+    
+    return render_template("post.html", post=requested_post, current_user=current_user, 
+                         form=comment_form, like_count=like_count, user_has_liked=user_has_liked)
+
+
+# Route to handle post likes
+@app.route("/like-post/<int:post_id>", methods=["POST"])
+def like_post(post_id):
+    if not current_user.is_authenticated:
+        return {"success": False, "error": "Please login to like posts"}, 401
+    
+    # Check if post exists
+    post = db.get_or_404(BlogPost, post_id)
+    
+    # Check if user has already liked this post
+    existing_like = db.session.execute(
+        text("SELECT * FROM post_likes WHERE post_id = :post_id AND user_id = :user_id"),
+        {"post_id": post_id, "user_id": current_user.id}
+    ).first()
+    
+    if existing_like:
+        # Unlike - remove the like
+        db.session.execute(
+            text("DELETE FROM post_likes WHERE post_id = :post_id AND user_id = :user_id"),
+            {"post_id": post_id, "user_id": current_user.id}
+        )
+        db.session.commit()
+        action = "unliked"
+    else:
+        # Like - add the like
+        from datetime import datetime
+        db.session.execute(
+            text("INSERT INTO post_likes (user_id, post_id, created_at) VALUES (:user_id, :post_id, :created_at)"),
+            {"user_id": current_user.id, "post_id": post_id, "created_at": datetime.now().strftime("%B %d, %Y %H:%M:%S")}
+        )
+        db.session.commit()
+        action = "liked"
+    
+    # Get updated like count
+    like_count = db.session.execute(
+        text("SELECT COUNT(*) FROM post_likes WHERE post_id = :post_id"),
+        {"post_id": post_id}
+    ).scalar() or 0
+    
+    return {"success": True, "action": action, "like_count": like_count}, 200
 
 
 # Use a decorator so an admin or a user can edit comments

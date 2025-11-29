@@ -159,3 +159,50 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Like Post functionality
+function toggleLike(postId) {
+    const likeBtn = document.getElementById(`like-btn-${postId}`);
+    const likeCount = document.getElementById(`like-count-${postId}`);
+    const likeText = likeBtn.querySelector('.like-text');
+    
+    // Disable button during request
+    likeBtn.disabled = true;
+    
+    fetch(`/like-post/${postId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update like count
+            const count = data.like_count;
+            likeCount.innerHTML = `<strong>${count}</strong> ${count === 1 ? 'like' : 'likes'}`;
+            
+            // Toggle button state
+            if (data.action === 'liked') {
+                likeBtn.classList.add('liked');
+                likeText.textContent = 'Unlike';
+                // Add animation
+                likeBtn.classList.add('animate-like');
+                setTimeout(() => likeBtn.classList.remove('animate-like'), 600);
+            } else {
+                likeBtn.classList.remove('liked');
+                likeText.textContent = 'Like';
+            }
+        } else {
+            alert(data.error || 'An error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update like. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        likeBtn.disabled = false;
+    });
+}

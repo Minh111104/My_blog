@@ -32,6 +32,33 @@
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
         {{ post.body|safe }}
+        
+        <!-- Like Section -->
+        <div class="like-section">
+          <div class="like-container">
+            {% if current_user.is_authenticated %}
+            <button class="like-btn {% if user_has_liked %}liked{% endif %}" 
+                    onclick="toggleLike({{ post.id }})"
+                    id="like-btn-{{ post.id }}">
+              <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span class="like-text">{{ 'Unlike' if user_has_liked else 'Like' }}</span>
+            </button>
+            {% else %}
+            <button class="like-btn" onclick="window.location.href='{{ url_for('login') }}'">
+              <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span class="like-text">Like</span>
+            </button>
+            {% endif %}
+            <span class="like-count" id="like-count-{{ post.id }}">
+              <strong>{{ like_count }}</strong> {{ 'like' if like_count == 1 else 'likes' }}
+            </span>
+          </div>
+        </div>
+
         <!--Only show Edit Post button if user id is 1 (admin user) -->
         {% if current_user.id == 1 %}
         <div class="d-flex justify-content-end mb-4">
