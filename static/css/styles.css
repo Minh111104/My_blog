@@ -11788,3 +11788,123 @@ header.masthead .post-heading .meta a {
     font-size: 1.2rem;
   }
 }
+
+/* Comment Actions and Like Styling */
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.comment-like-wrapper {
+  margin-right: auto;
+}
+
+.comment-like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  color: #6c757d;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.comment-like-btn:hover {
+  background: #f8f9fa;
+  border-color: #0085A1;
+  color: #0085A1;
+  transform: translateY(-1px);
+}
+
+.comment-like-btn:active {
+  transform: translateY(0);
+}
+
+.comment-like-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Liked state for comment */
+.comment-like-btn.liked {
+  background: linear-gradient(135deg, #ffe8f0 0%, #ffd6e7 100%);
+  border-color: #ff4d6d;
+  color: #ff4d6d;
+}
+
+.comment-like-btn.liked .comment-heart-icon {
+  fill: #ff4d6d;
+  stroke: #ff4d6d;
+}
+
+.comment-like-btn:hover .comment-heart-icon {
+  fill: #0085A1;
+  stroke: #0085A1;
+}
+
+.comment-like-btn.liked:hover {
+  background: linear-gradient(135deg, #ffd6e7 0%, #ffb8d2 100%);
+  border-color: #ff4d6d;
+  color: #ff4d6d;
+}
+
+.comment-like-btn.liked:hover .comment-heart-icon {
+  fill: #ff4d6d;
+  stroke: #ff4d6d;
+}
+
+/* Comment heart icon styling */
+.comment-heart-icon {
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.comment-like-count {
+  font-weight: 600;
+  min-width: 1rem;
+  text-align: center;
+}
+
+/* Comment like animation */
+.comment-like-btn.animate-like .comment-heart-icon {
+  animation: commentHeartBeat 0.6s ease;
+}
+
+@keyframes commentHeartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.4);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(1.3);
+  }
+}
+
+/* Responsive comment actions */
+@media (max-width: 768px) {
+  .comment-actions {
+    gap: 0.4rem;
+  }
+  
+  .comment-like-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .comment-heart-icon {
+    width: 14px;
+    height: 14px;
+  }
+}

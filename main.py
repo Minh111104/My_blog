@@ -166,6 +166,16 @@ class PostLike(db.Model):
     created_at: Mapped[str] = mapped_column(String(250), nullable=False)
 
 
+# Create a table for comment likes
+class CommentLike(db.Model):
+    __tablename__ = "comment_likes"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
+    comment_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("comments.id"))
+    # Timestamp of when the like was created
+    created_at: Mapped[str] = mapped_column(String(250), nullable=False)
+
+
 with app.app_context():
     db.create_all()
 
@@ -434,8 +444,42 @@ def show_post(post_id):
         ).first()
         user_has_liked = user_like is not None
     
+    # Get comment likes data
+    comment_likes = {}
+    user_liked_comments = set()
+    
+    if current_user.is_authenticated:
+        # Get all comment IDs for this post
+        comment_ids = [comment.id for comment in requested_post.comments]
+        
+        if comment_ids:
+            # Get like counts for all comments
+            for comment_id in comment_ids:
+                count = db.session.execute(
+                    text("SELECT COUNT(*) FROM comment_likes WHERE comment_id = :comment_id"),
+                    {"comment_id": comment_id}
+                ).scalar() or 0
+                comment_likes[comment_id] = count
+                
+                # Check if user liked this comment
+                user_comment_like = db.session.execute(
+                    text("SELECT * FROM comment_likes WHERE comment_id = :comment_id AND user_id = :user_id"),
+                    {"comment_id": comment_id, "user_id": current_user.id}
+                ).first()
+                if user_comment_like:
+                    user_liked_comments.add(comment_id)
+    else:
+        # For non-authenticated users, just get the counts
+        for comment in requested_post.comments:
+            count = db.session.execute(
+                text("SELECT COUNT(*) FROM comment_likes WHERE comment_id = :comment_id"),
+                {"comment_id": comment.id}
+            ).scalar() or 0
+            comment_likes[comment.id] = count
+    
     return render_template("post.html", post=requested_post, current_user=current_user, 
-                         form=comment_form, like_count=like_count, user_has_liked=user_has_liked)
+                         form=comment_form, like_count=like_count, user_has_liked=user_has_liked,
+                         comment_likes=comment_likes, user_liked_comments=user_liked_comments)
 
 
 # Route to handle post likes
@@ -475,6 +519,48 @@ def like_post(post_id):
     like_count = db.session.execute(
         text("SELECT COUNT(*) FROM post_likes WHERE post_id = :post_id"),
         {"post_id": post_id}
+    ).scalar() or 0
+    
+    return {"success": True, "action": action, "like_count": like_count}, 200
+
+
+# Route to handle comment likes
+@app.route("/like-comment/<int:comment_id>", methods=["POST"])
+def like_comment(comment_id):
+    if not current_user.is_authenticated:
+        return {"success": False, "error": "Please login to like comments"}, 401
+    
+    # Check if comment exists
+    comment = db.get_or_404(Comment, comment_id)
+    
+    # Check if user has already liked this comment
+    existing_like = db.session.execute(
+        text("SELECT * FROM comment_likes WHERE comment_id = :comment_id AND user_id = :user_id"),
+        {"comment_id": comment_id, "user_id": current_user.id}
+    ).first()
+    
+    if existing_like:
+        # Unlike - remove the like
+        db.session.execute(
+            text("DELETE FROM comment_likes WHERE comment_id = :comment_id AND user_id = :user_id"),
+            {"comment_id": comment_id, "user_id": current_user.id}
+        )
+        db.session.commit()
+        action = "unliked"
+    else:
+        # Like - add the like
+        from datetime import datetime
+        db.session.execute(
+            text("INSERT INTO comment_likes (user_id, comment_id, created_at) VALUES (:user_id, :comment_id, :created_at)"),
+            {"user_id": current_user.id, "comment_id": comment_id, "created_at": datetime.now().strftime("%B %d, %Y %H:%M:%S")}
+        )
+        db.session.commit()
+        action = "liked"
+    
+    # Get updated like count
+    like_count = db.session.execute(
+        text("SELECT COUNT(*) FROM comment_likes WHERE comment_id = :comment_id"),
+        {"comment_id": comment_id}
     ).scalar() or 0
     
     return {"success": True, "action": action, "like_count": like_count}, 200

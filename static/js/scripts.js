@@ -206,3 +206,48 @@ function toggleLike(postId) {
         likeBtn.disabled = false;
     });
 }
+
+// Like Comment functionality
+function toggleCommentLike(commentId) {
+    const likeBtn = document.getElementById(`comment-like-btn-${commentId}`);
+    const likeCountSpan = document.getElementById(`comment-like-count-${commentId}`);
+    
+    // Disable button during request
+    likeBtn.disabled = true;
+    
+    fetch(`/like-comment/${commentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update like count
+            likeCountSpan.textContent = data.like_count;
+            
+            // Toggle button state
+            if (data.action === 'liked') {
+                likeBtn.classList.add('liked');
+                likeBtn.title = 'Unlike';
+                // Add animation
+                likeBtn.classList.add('animate-like');
+                setTimeout(() => likeBtn.classList.remove('animate-like'), 600);
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.title = 'Like';
+            }
+        } else {
+            alert(data.error || 'An error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update like. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        likeBtn.disabled = false;
+    });
+}

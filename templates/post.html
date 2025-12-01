@@ -88,14 +88,43 @@
               <div class="commentText">
                 {{comment.text|safe}}
                 <span class="sub-text">{{comment.comment_author.name}}</span>
-                {% if current_user.is_authenticated and (current_user.id == comment.comment_author.id or current_user.id == 1) %}
-                  <a href="{{ url_for('edit_comment', comment_id=comment.id) }}" class="btn btn-sm btn-outline-secondary ms-2">Edit</a>
-                  {% if current_user.id == 1 %}
-                    <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="post" style="display:inline;">
-                      <button type="submit" class="btn btn-sm btn-outline-danger ms-2" onclick="return confirm('Delete this comment?');">Delete</button>
-                    </form>
+                
+                <!-- Comment Actions Row -->
+                <div class="comment-actions">
+                  <!-- Comment Like Button -->
+                  <div class="comment-like-wrapper">
+                    {% if current_user.is_authenticated %}
+                    <button class="comment-like-btn {% if comment.id in user_liked_comments %}liked{% endif %}" 
+                            onclick="toggleCommentLike({{ comment.id }})"
+                            id="comment-like-btn-{{ comment.id }}"
+                            title="{{ 'Unlike' if comment.id in user_liked_comments else 'Like' }}">
+                      <svg class="comment-heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                      <span class="comment-like-count" id="comment-like-count-{{ comment.id }}">{{ comment_likes.get(comment.id, 0) }}</span>
+                    </button>
+                    {% else %}
+                    <button class="comment-like-btn" 
+                            onclick="window.location.href='{{ url_for('login') }}'"
+                            title="Login to like">
+                      <svg class="comment-heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                      <span class="comment-like-count">{{ comment_likes.get(comment.id, 0) }}</span>
+                    </button>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Edit/Delete Buttons -->
+                  {% if current_user.is_authenticated and (current_user.id == comment.comment_author.id or current_user.id == 1) %}
+                    <a href="{{ url_for('edit_comment', comment_id=comment.id) }}" class="btn btn-sm btn-outline-secondary ms-2">Edit</a>
+                    {% if current_user.id == 1 %}
+                      <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-danger ms-2" onclick="return confirm('Delete this comment?');">Delete</button>
+                      </form>
+                    {% endif %}
                   {% endif %}
-                {% endif %}
+                </div>
               </div>
             </li>
             {% endfor %}
