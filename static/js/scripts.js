@@ -251,3 +251,18 @@ function toggleCommentLike(commentId) {
         likeBtn.disabled = false;
     });
 }
+
+// Dark mode toggle functionality
+const darkModeToggle = document.getElementById('darkModeToggle');
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+    });
+}
+
+// Load dark mode preference on page load
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+}
