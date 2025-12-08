@@ -159,3 +159,332 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Like Post functionality
+function toggleLike(postId) {
+    const likeBtn = document.getElementById(`like-btn-${postId}`);
+    const likeCount = document.getElementById(`like-count-${postId}`);
+    const likeText = likeBtn.querySelector('.like-text');
+    
+    // Disable button during request
+    likeBtn.disabled = true;
+    
+    fetch(`/like-post/${postId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update like count
+            const count = data.like_count;
+            likeCount.innerHTML = `<strong>${count}</strong> ${count === 1 ? 'like' : 'likes'}`;
+            
+            // Toggle button state
+            if (data.action === 'liked') {
+                likeBtn.classList.add('liked');
+                likeText.textContent = 'Unlike';
+                // Add animation
+                likeBtn.classList.add('animate-like');
+                setTimeout(() => likeBtn.classList.remove('animate-like'), 600);
+            } else {
+                likeBtn.classList.remove('liked');
+                likeText.textContent = 'Like';
+            }
+        } else {
+            alert(data.error || 'An error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update like. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        likeBtn.disabled = false;
+    });
+}
+
+// Like Comment functionality
+function toggleCommentLike(commentId) {
+    const likeBtn = document.getElementById(`comment-like-btn-${commentId}`);
+    const likeCountSpan = document.getElementById(`comment-like-count-${commentId}`);
+    
+    // Disable button during request
+    likeBtn.disabled = true;
+    
+    fetch(`/like-comment/${commentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update like count
+            likeCountSpan.textContent = data.like_count;
+            
+            // Toggle button state
+            if (data.action === 'liked') {
+                likeBtn.classList.add('liked');
+                likeBtn.title = 'Unlike';
+                // Add animation
+                likeBtn.classList.add('animate-like');
+                setTimeout(() => likeBtn.classList.remove('animate-like'), 600);
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.title = 'Like';
+            }
+        } else {
+            alert(data.error || 'An error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update like. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        likeBtn.disabled = false;
+    });
+}
+
+// Dark mode toggle functionality
+const darkModeToggle = document.getElementById('darkModeToggle');
+if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+    });
+}
+
+// Load dark mode preference on page load
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+}
+
+// Table of Contents functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tocContainer = document.getElementById('table-of-contents');
+    const tocList = document.getElementById('toc-list');
+    const tocToggle = document.getElementById('toc-toggle');
+    const postContent = document.getElementById('post-content');
+    
+    if (!tocContainer || !tocList || !postContent) return;
+    
+    // Get all headings from the post content
+    const headings = postContent.querySelectorAll('h1, h2, h3');
+    
+    if (headings.length === 0) {
+        // Hide TOC if no headings found
+        tocContainer.style.display = 'none';
+        return;
+    }
+    
+    // Generate TOC
+    let tocHTML = '';
+    headings.forEach((heading, index) => {
+        // Add an ID to each heading if it doesn't have one
+        if (!heading.id) {
+            heading.id = `heading-${index}`;
+        }
+        
+        const level = heading.tagName.toLowerCase();
+        const text = heading.textContent;
+        const id = heading.id;
+        
+        const className = level === 'h3' ? 'toc-h3' : '';
+        tocHTML += `<li class="${className}"><a href="#${id}" data-target="${id}">${text}</a></li>`;
+    });
+    
+    tocList.innerHTML = tocHTML;
+    
+    // Toggle TOC visibility
+    if (tocToggle) {
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            tocContainer.classList.toggle('collapsed');
+        });
+        
+        // Also toggle on header click
+        const tocHeader = document.querySelector('.toc-header');
+        if (tocHeader) {
+            tocHeader.addEventListener('click', function() {
+                tocContainer.classList.toggle('collapsed');
+            });
+        }
+    }
+    
+    // Smooth scroll to heading
+    const tocLinks = tocList.querySelectorAll('a');
+    tocLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                const offset = 100; // Offset for fixed header
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Highlight active section on scroll
+    function highlightActiveSection() {
+        let currentActive = null;
+        const scrollPosition = window.scrollY + 150;
+        
+        headings.forEach(heading => {
+            const headingTop = heading.offsetTop;
+            
+            if (scrollPosition >= headingTop) {
+                currentActive = heading.id;
+            }
+        });
+        
+        // Remove all active classes
+        tocLinks.forEach(link => link.classList.remove('active'));
+        
+        // Add active class to current section
+        if (currentActive) {
+            const activeLink = tocList.querySelector(`a[data-target="${currentActive}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+    }
+    
+    // Throttle scroll event for performance
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            window.cancelAnimationFrame(scrollTimeout);
+        }
+        scrollTimeout = window.requestAnimationFrame(highlightActiveSection);
+    });
+    
+    // Initial highlight
+    highlightActiveSection();
+});
+
+// Table of Contents functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tocContainer = document.getElementById('table-of-contents');
+    const tocList = document.getElementById('toc-list');
+    const tocToggle = document.getElementById('toc-toggle');
+    const postContent = document.getElementById('post-content');
+    
+    if (!tocContainer || !tocList || !postContent) return;
+    
+    // Get all headings from the post content
+    const headings = postContent.querySelectorAll('h1, h2, h3');
+    
+    if (headings.length === 0) {
+        // Hide TOC if no headings found
+        tocContainer.style.display = 'none';
+        return;
+    }
+    
+    // Generate TOC
+    let tocHTML = '';
+    headings.forEach((heading, index) => {
+        // Add an ID to each heading if it doesn't have one
+        if (!heading.id) {
+            heading.id = `heading-${index}`;
+        }
+        
+        const level = heading.tagName.toLowerCase();
+        const text = heading.textContent;
+        const id = heading.id;
+        
+        const className = level === 'h3' ? 'toc-h3' : '';
+        tocHTML += `<li class="${className}"><a href="#${id}" data-target="${id}">${text}</a></li>`;
+    });
+    
+    tocList.innerHTML = tocHTML;
+    
+    // Toggle TOC visibility
+    if (tocToggle) {
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            tocContainer.classList.toggle('collapsed');
+        });
+        
+        // Also toggle on header click
+        const tocHeader = document.querySelector('.toc-header');
+        if (tocHeader) {
+            tocHeader.addEventListener('click', function() {
+                tocContainer.classList.toggle('collapsed');
+            });
+        }
+    }
+    
+    // Smooth scroll to heading
+    const tocLinks = tocList.querySelectorAll('a');
+    tocLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                const offset = 100; // Offset for fixed header
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Highlight active section on scroll
+    function highlightActiveSection() {
+        let currentActive = null;
+        const scrollPosition = window.scrollY + 150;
+        
+        headings.forEach(heading => {
+            const headingTop = heading.offsetTop;
+            
+            if (scrollPosition >= headingTop) {
+                currentActive = heading.id;
+            }
+        });
+        
+        // Remove all active classes
+        tocLinks.forEach(link => link.classList.remove('active'));
+        
+        // Add active class to current section
+        if (currentActive) {
+            const activeLink = tocList.querySelector(`a[data-target="${currentActive}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+    }
+    
+    // Throttle scroll event for performance
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            window.cancelAnimationFrame(scrollTimeout);
+        }
+        scrollTimeout = window.requestAnimationFrame(highlightActiveSection);
+    });
+    
+    // Initial highlight
+    highlightActiveSection();
+});
