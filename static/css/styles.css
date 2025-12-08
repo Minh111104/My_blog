@@ -11676,3 +11676,371 @@ body.dark-mode .dark-mode-toggle .moon-icon {
     display: block;
   }
 }
+/* ============================================
+   DARK MODE GLOBAL STYLES
+   ============================================ */
+
+/* Dark Mode Variables */
+body.dark-mode {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: #e0e0e0;
+  --bs-gray-100: #2d2d2d;
+  --bs-gray-200: #3a3a3a;
+  --bs-gray-300: #4a4a4a;
+  --bs-gray-400: #5a5a5a;
+  --bs-gray-500: #6a6a6a;
+  --bs-gray-600: #8a8a8a;
+  --bs-gray-700: #b0b0b0;
+  --bs-gray-800: #d0d0d0;
+  --bs-gray-900: #e0e0e0;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* Dark Mode - Navigation */
+body.dark-mode #mainNav {
+  background-color: rgba(26, 26, 26, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .navbar-brand,
+body.dark-mode .nav-link {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .nav-link:hover {
+  color: #4da8ff !important;
+}
+
+body.dark-mode .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Dark Mode - Masthead */
+body.dark-mode .masthead {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .masthead .page-heading,
+body.dark-mode .masthead .post-heading,
+body.dark-mode .masthead .site-heading {
+  color: #ffffff;
+}
+
+body.dark-mode .masthead .site-heading .subheading,
+body.dark-mode .masthead .page-heading .subheading {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-mode .masthead .meta {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark Mode - Cards and Posts */
+body.dark-mode .post-card {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .post-title,
+body.dark-mode .post-subtitle {
+  color: #e0e0e0;
+}
+
+body.dark-mode .post-meta {
+  color: #a0aec0;
+}
+
+body.dark-mode .post-excerpt {
+  color: #cbd5e0;
+}
+
+body.dark-mode .post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode - Buttons */
+body.dark-mode .btn-primary {
+  background: linear-gradient(135deg, #0085A1, #00a8c7);
+  border-color: #0085A1;
+  color: white;
+}
+
+body.dark-mode .btn-primary:hover {
+  background: linear-gradient(135deg, #006d84, #008ca8);
+  border-color: #006d84;
+}
+
+body.dark-mode .btn-outline-secondary {
+  color: #cbd5e0;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Dark Mode - Forms */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: #2d3748;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: #374151;
+  border-color: #4da8ff;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 0.25rem rgba(77, 168, 255, 0.25);
+}
+
+body.dark-mode .form-control::placeholder {
+  color: #9ca3af;
+}
+
+body.dark-mode .form-label {
+  color: #e0e0e0;
+}
+
+/* Dark Mode - Auth Cards (Login/Register) */
+body.dark-mode .auth-card {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .auth-title {
+  color: #e0e0e0;
+}
+
+body.dark-mode .auth-subtitle {
+  color: #cbd5e0;
+}
+
+body.dark-mode .auth-link {
+  color: #4da8ff;
+}
+
+body.dark-mode .auth-link:hover {
+  color: #63b3ed;
+}
+
+/* Dark Mode - Comments */
+body.dark-mode .comment {
+  background-color: transparent;
+}
+
+body.dark-mode .commentText {
+  background-color: #2d3748;
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sub-text {
+  color: #a0aec0;
+}
+
+body.dark-mode .commenterImage img {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Mode - Contact Info Cards */
+body.dark-mode .contact-info-card {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .contact-info-card:hover {
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .contact-icon {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+/* Dark Mode - Pagination */
+body.dark-mode .pagination .page-link {
+  background-color: #2d3748;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #cbd5e0;
+}
+
+body.dark-mode .pagination .page-link:hover {
+  background-color: #374151;
+  border-color: #4da8ff;
+  color: #ffffff;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #0085A1, #00a8c7);
+  border-color: #0085A1;
+}
+
+body.dark-mode .pagination .page-item.disabled .page-link {
+  background-color: #1a202c;
+  color: #4a5568;
+}
+
+/* Dark Mode - Footer */
+body.dark-mode footer {
+  background-color: #0f1419;
+  color: #cbd5e0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode footer a {
+  color: #4da8ff;
+}
+
+body.dark-mode footer a:hover {
+  color: #63b3ed;
+}
+
+/* Dark Mode - Alerts */
+body.dark-mode .alert {
+  background-color: #2d3748;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .alert-info {
+  background-color: rgba(66, 153, 225, 0.2);
+  border-color: #4299e1;
+  color: #90cdf4;
+}
+
+/* Dark Mode - Post Content */
+body.dark-mode .post-content {
+  color: #e0e0e0;
+}
+
+body.dark-mode .post-content h1,
+body.dark-mode .post-content h2,
+body.dark-mode .post-content h3,
+body.dark-mode .post-content h4,
+body.dark-mode .post-content h5,
+body.dark-mode .post-content h6 {
+  color: #f7fafc;
+}
+
+body.dark-mode .post-content a {
+  color: #4da8ff;
+}
+
+body.dark-mode .post-content a:hover {
+  color: #63b3ed;
+}
+
+body.dark-mode .post-content blockquote {
+  border-left-color: #4299e1;
+  background-color: rgba(66, 153, 225, 0.1);
+  color: #cbd5e0;
+}
+
+body.dark-mode .post-content code {
+  background-color: #2d3748;
+  color: #fbb6ce;
+}
+
+body.dark-mode .post-content pre {
+  background-color: #1a202c;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode - Like Buttons */
+body.dark-mode .like-btn {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-color: #4299e1;
+  color: #4299e1;
+}
+
+body.dark-mode .like-btn:hover {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+}
+
+body.dark-mode .like-btn.liked {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  border-color: #f56565;
+}
+
+body.dark-mode .like-count {
+  color: #cbd5e0;
+}
+
+/* Dark Mode - Comment Like Buttons */
+body.dark-mode .comment-like-btn {
+  background-color: #2d3748;
+  border-color: rgba(236, 72, 153, 0.5);
+  color: #f687b3;
+}
+
+body.dark-mode .comment-like-btn:hover {
+  background-color: #374151;
+  border-color: #ec4899;
+}
+
+body.dark-mode .comment-like-btn.liked {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: white;
+}
+
+/* Dark Mode - Search */
+body.dark-mode .search-section {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
+body.dark-mode .search-input {
+  background-color: #374151;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .search-input:focus {
+  border-color: #4da8ff;
+  box-shadow: 0 0 0 0.25rem rgba(77, 168, 255, 0.25);
+}
+
+body.dark-mode .search-btn {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+}
+
+/* Dark Mode - Categories/Tags */
+body.dark-mode .post-category {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-color: rgba(77, 168, 255, 0.5);
+  color: #4da8ff;
+}
+
+body.dark-mode .post-category:hover {
+  border-color: #4da8ff;
+  box-shadow: 0 4px 15px rgba(77, 168, 255, 0.3);
+}
+
+/* Dark Mode - Reading Progress Bar */
+body.dark-mode .reading-progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .reading-progress-fill {
+  background: linear-gradient(90deg, #4299e1 0%, #63b3ed 100%);
+  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.5);
+}
+
+/* Dark Mode Transitions */
+body,
+#mainNav,
+.post-card,
+.btn,
+.form-control,
+.auth-card,
+footer {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
