@@ -293,30 +293,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const level = heading.tagName.toLowerCase();
-        const text = heading.textContent;
+        const text = heading.textContent.trim();
         const id = heading.id;
         
-        const className = level === 'h3' ? 'toc-h3' : '';
+        // Add appropriate class based on heading level
+        const className = level === 'h3' || level === 'h4' ? 'toc-h3' : '';
         tocHTML += `<li class="${className}"><a href="#${id}" data-target="${id}">${text}</a></li>`;
     });
     
     tocList.innerHTML = tocHTML;
-    
-    // Toggle TOC visibility
-    if (tocToggle) {
-        tocToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            tocContainer.classList.toggle('collapsed');
-        });
-        
-        // Also toggle on header click
-        const tocHeader = document.querySelector('.toc-header');
-        if (tocHeader) {
-            tocHeader.addEventListener('click', function() {
-                tocContainer.classList.toggle('collapsed');
-            });
-        }
-    }
     
     // Smooth scroll to heading
     const tocLinks = tocList.querySelectorAll('a');
