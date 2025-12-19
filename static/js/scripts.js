@@ -287,6 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContentCol.classList.remove('col-lg-8');
             mainContentCol.classList.add('col-lg-10', 'col-xl-8');
         }
+        // Add class to center text content
+        if (postContent) {
+            postContent.classList.add('text-centered');
+        }
         return;
     }
     
