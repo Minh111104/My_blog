@@ -281,15 +281,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (headings.length === 0) {
         // Hide TOC if no headings found and center the content
         tocContainer.style.display = 'none';
-        // Add class to center the main content when TOC is hidden
+        // Center the main content column when TOC is hidden
         const mainContentCol = document.querySelector('.col-lg-8');
         if (mainContentCol) {
             mainContentCol.classList.remove('col-lg-8');
-            mainContentCol.classList.add('col-lg-10', 'col-xl-8');
-        }
-        // Add class to center text content
-        if (postContent) {
-            postContent.classList.add('text-centered');
+            mainContentCol.classList.add('col-lg-10', 'col-xl-8', 'mx-auto');
         }
         return;
     }

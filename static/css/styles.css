@@ -11812,40 +11812,6 @@ body.dark-mode .dark-mode-toggle .moon-icon {
   font-weight: 600;
 }
 
-/* Center alignment for posts without TOC */
-.post-content:only-child {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* Center text alignment for posts without TOC */
-.post-content.text-centered {
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.post-content.text-centered h1,
-.post-content.text-centered h2,
-.post-content.text-centered h3,
-.post-content.text-centered h4,
-.post-content.text-centered h5,
-.post-content.text-centered h6 {
-  text-align: center;
-}
-
-.post-content.text-centered p,
-.post-content.text-centered ul,
-.post-content.text-centered ol {
-  text-align: center;
-}
-
-.post-content.text-centered img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 /* ============================================
    DARK MODE GLOBAL STYLES
    ============================================ */
