@@ -11946,6 +11946,80 @@ body.dark-mode .form-label {
   color: #e0e0e0;
 }
 
+/* Dark Mode - CKEditor */
+body.dark-mode .cke_chrome {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: #2d3748 !important;
+}
+
+body.dark-mode .cke_top {
+  background: #1f2937 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark-mode .cke_bottom {
+  background: #1f2937 !important;
+  border-top-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark-mode .cke_inner {
+  background: #2d3748 !important;
+}
+
+body.dark-mode .cke_contents {
+  background-color: #374151 !important;
+}
+
+body.dark-mode .cke_wysiwyg_frame,
+body.dark-mode .cke_wysiwyg_div {
+  background-color: #374151 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .cke_button {
+  background: transparent !important;
+}
+
+body.dark-mode .cke_button_icon {
+  filter: invert(1) !important;
+}
+
+body.dark-mode .cke_combo_button {
+  background: #374151 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .cke_combo_text {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .cke_combo_arrow {
+  filter: invert(1) !important;
+}
+
+body.dark-mode .cke_toolgroup {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .cke_button:hover,
+body.dark-mode .cke_button:focus,
+body.dark-mode .cke_button:active {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .cke_path {
+  color: #9ca3af !important;
+}
+
+body.dark-mode .cke_path_item,
+body.dark-mode .cke_path_item:hover,
+body.dark-mode .cke_path_item:focus,
+body.dark-mode .cke_path_item:active {
+  color: #e0e0e0 !important;
+}
+
 /* Dark Mode - Auth Cards (Login/Register) */
 body.dark-mode .auth-card {
   background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
