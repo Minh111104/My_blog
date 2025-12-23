@@ -12020,6 +12020,41 @@ body.dark-mode .cke_path_item:active {
   color: #e0e0e0 !important;
 }
 
+/* Dark Mode - Form Floating Labels */
+body.dark-mode .form-floating > label {
+  color: #9ca3af;
+}
+
+body.dark-mode .form-floating > .form-control:focus ~ label,
+body.dark-mode .form-floating > .form-control:not(:placeholder-shown) ~ label,
+body.dark-mode .form-floating > .form-select ~ label {
+  color: #4da8ff;
+}
+
+body.dark-mode .form-floating > .form-control,
+body.dark-mode .form-floating > .form-select {
+  background-color: #2d3748;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-floating > .form-control:focus,
+body.dark-mode .form-floating > .form-select:focus {
+  background-color: #374151;
+  border-color: #4da8ff;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 0.25rem rgba(77, 168, 255, 0.25);
+}
+
+body.dark-mode .form-floating > textarea.form-control {
+  background-color: #2d3748;
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-floating > textarea.form-control:focus {
+  background-color: #374151;
+}
+
 /* Dark Mode - Auth Cards (Login/Register) */
 body.dark-mode .auth-card {
   background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
