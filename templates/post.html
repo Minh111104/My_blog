@@ -31,7 +31,7 @@
   <div class="container-fluid px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5">
       <!-- Main Content Column -->
-      <div class="col-lg-8 col-xl-7 mx-lg-0 mx-auto">
+      <div id="main-content-column" class="col-lg-8 col-xl-7 mx-lg-0 mx-auto">
         <div id="post-content" class="post-content">
           {{ post.body|safe }}
         </div>
@@ -136,7 +136,7 @@
       </div>
       
       <!-- Sidebar Table of Contents -->
-      <div class="col-lg-3 d-none d-lg-block">
+      <div id="toc-column" class="col-lg-3 d-none d-lg-block">
         <aside id="table-of-contents" class="toc-sidebar">
           <div class="toc-header">
             <h3 class="toc-title">
@@ -148,8 +148,16 @@
                 <line x1="3" y1="12" x2="3.01" y2="12"></line>
                 <line x1="3" y1="18" x2="3.01" y2="18"></line>
               </svg>
-              Contents
+              <span class="toc-title-text">Contents</span>
             </h3>
+            <button id="toc-toggle" class="toc-toggle-btn" aria-label="Toggle Table of Contents">
+              <svg class="toc-expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <svg class="toc-collapse-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
           <nav id="toc-nav" class="toc-nav">
             <ul id="toc-list" class="toc-list">
