@@ -267,6 +267,46 @@ if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
 }
 
+// TOC Collapse/Expand functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tocToggle = document.getElementById('toc-toggle');
+    const tocContainer = document.getElementById('table-of-contents');
+    const tocColumn = document.getElementById('toc-column');
+    const mainContentColumn = document.getElementById('main-content-column');
+    
+    if (tocToggle && tocContainer && tocColumn && mainContentColumn) {
+        // Load saved TOC state
+        const tocCollapsed = localStorage.getItem('tocCollapsed') === 'true';
+        if (tocCollapsed) {
+            tocContainer.classList.add('collapsed');
+            expandMainContent();
+        }
+        
+        tocToggle.addEventListener('click', function() {
+            const isCollapsed = tocContainer.classList.toggle('collapsed');
+            localStorage.setItem('tocCollapsed', isCollapsed);
+            
+            if (isCollapsed) {
+                expandMainContent();
+            } else {
+                restoreMainContent();
+            }
+        });
+        
+        function expandMainContent() {
+            // Expand main content to take up more space
+            mainContentColumn.classList.remove('col-lg-8', 'col-xl-7');
+            mainContentColumn.classList.add('col-lg-11', 'col-xl-10');
+        }
+        
+        function restoreMainContent() {
+            // Restore original width
+            mainContentColumn.classList.remove('col-lg-11', 'col-xl-10');
+            mainContentColumn.classList.add('col-lg-8', 'col-xl-7');
+        }
+    }
+});
+
 // Table of Contents Sidebar functionality
 document.addEventListener('DOMContentLoaded', function() {
     const tocContainer = document.getElementById('table-of-contents');
