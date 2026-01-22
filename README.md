@@ -1,7 +1,6 @@
 # Minh's Flask Blog
 
-Welcome to **M-Talks** – a modern, full-featured blogging platform built with Flask, SQLAlchemy, Bootstrap, and PostgreSQL.  
-This project demonstrates user authentication, admin controls, posting blogs, and deployment to Render.
+Welcome to **M-Talks** – a modern, full-featured blogging platform built with Flask, SQLAlchemy, Bootstrap, and PostgreSQL. This project demonstrates user authentication, admin controls, posting blogs, and deployment to Render.
 
 ## 🚀 Features
 
