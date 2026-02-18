@@ -11942,6 +11942,10 @@ body.dark-mode .form-control::placeholder {
   color: #9ca3af;
 }
 
+body.dark-mode .form-floating > .form-control::placeholder {
+  color: transparent;
+}
+
 body.dark-mode .form-label {
   color: #e0e0e0;
 }
