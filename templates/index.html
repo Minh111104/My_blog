@@ -41,7 +41,7 @@
         <div class="post-card featured">
           <div class="post-image">
             <img src="{{ all_posts[0].img_url }}" alt="{{ all_posts[0].title }}" class="img-fluid">
-            <div class="featured-badge">NEWEST</div>
+            {% if current_page == 1 %}<div class="featured-badge">NEWEST</div>{% endif %}
           </div>
           <div class="post-content">
             <div class="post-meta-top">
