@@ -13,6 +13,9 @@ Welcome to **M-Talks** – a modern, full-featured blogging platform built with 
 - **Rich Text Editing**  
   Write posts and comments using CKEditor.
 
+- **Table of Contents**
+  Overview of a post.
+
 - **Comment System**  
   Authenticated users can comment on posts. Admin can edit or delete any comment.
 
