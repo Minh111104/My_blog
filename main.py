@@ -661,17 +661,22 @@ MAIL_APP_PW = os.environ.get("PASSWORD_KEY")
 def contact():
     if request.method == "POST":
         data = request.form
-        send_email(data["name"], data["email"], data["phone"], data["message"])
-        return render_template("contact.html", msg_sent=True)
+        email_sent = send_email(data["name"], data["email"], data["phone"], data["message"])
+        return render_template("contact.html", msg_sent=email_sent, msg_error=not email_sent)
     return render_template("contact.html", msg_sent=False)
 
 
 def send_email(name, email, phone, message):
     email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
-    with smtplib.SMTP("smtp.gmail.com") as connection:
-        connection.starttls()
-        connection.login(MAIL_ADDRESS, MAIL_APP_PW)
-        connection.sendmail(MAIL_ADDRESS, MAIL_ADDRESS, email_message)
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as connection:
+            connection.starttls()
+            connection.login(MAIL_ADDRESS, MAIL_APP_PW)
+            connection.sendmail(MAIL_ADDRESS, MAIL_ADDRESS, email_message)
+        return True
+    except (smtplib.SMTPException, OSError) as e:
+        app.logger.error(f"Failed to send contact email: {e}")
+        return False
 
 
 if __name__ == "__main__":
