@@ -61,8 +61,8 @@ Create a `.env` file in the project root:
 ```bash
 FLASK_KEY=your-secret-key
 DB_URI=sqlite:///posts.db  # or your PostgreSQL URI for production
-EMAIL_KEY=your-email@gmail.com
-PASSWORD_KEY=your-app-password
+EMAIL_KEY=your-email@gmail.com  # where contact form messages are delivered
+RESEND_API_KEY=your-resend-api-key  # used to send contact form emails via Resend's API
 ```
 
 ### 4. Run locally
