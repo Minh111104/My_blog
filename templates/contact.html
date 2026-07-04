@@ -11,6 +11,8 @@
         <div class="page-heading">
           {% if msg_sent: %}
           <h1>Successfully sent your message</h1>
+          {% elif msg_error: %}
+          <h1>Sorry, something went wrong sending your message. Please try again later.</h1>
           {% else: %}
           <h1>Contact Me</h1>
           {% endif %}
