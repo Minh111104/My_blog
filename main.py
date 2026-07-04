@@ -10,7 +10,7 @@ from sqlalchemy import Integer, String, Text, text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
-import smtplib
+import requests
 import os
 from dotenv import load_dotenv
 import re
@@ -653,7 +653,7 @@ def about():
 
 
 MAIL_ADDRESS = os.environ.get("EMAIL_KEY")
-MAIL_APP_PW = os.environ.get("PASSWORD_KEY")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 
 
 # Contact form route
@@ -667,14 +667,23 @@ def contact():
 
 
 def send_email(name, email, phone, message):
-    email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
+    # Render blocks outbound SMTP on all plans, so we send via Resend's HTTP API instead of smtplib.
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as connection:
-            connection.starttls()
-            connection.login(MAIL_ADDRESS, MAIL_APP_PW)
-            connection.sendmail(MAIL_ADDRESS, MAIL_ADDRESS, email_message)
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={
+                "from": "M-Talks Contact Form <onboarding@resend.dev>",
+                "to": [MAIL_ADDRESS],
+                "reply_to": email,
+                "subject": "New Message from M-Talks Contact Form",
+                "text": f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage:\n{message}",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
         return True
-    except (smtplib.SMTPException, OSError) as e:
+    except requests.RequestException as e:
         app.logger.error(f"Failed to send contact email: {e}")
         return False
 
