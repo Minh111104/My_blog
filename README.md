@@ -37,7 +37,7 @@ Welcome to **M-Talks** – a modern, full-featured blogging platform built with 
 - **Database:** SQLAlchemy ORM, PostgreSQL (production), SQLite (local/dev)
 - **Frontend:** Bootstrap 5
 - **Deployment:** Render.com
-- **Other:** Gunicorn, python-dotenv
+- **Other:** Gunicorn, python-dotenv, Resend (transactional email API)
 
 ## ⚡ Getting Started
 
@@ -51,7 +51,7 @@ cd My_blog
 ### 2. Install dependencies
 
 ```bash
-pip install -r [requirements.txt](http://_vscodecontentref_/0)
+pip install -r requirements.txt
 ```
 
 ### 3. Set up environment variables
@@ -68,7 +68,7 @@ RESEND_API_KEY=your-resend-api-key  # used to send contact form emails via Resen
 ### 4. Run locally
 
 ```bash
-python [main.py](http://_vscodecontentref_/1)
+python main.py
 ```
 
 Visit `http://localhost:5000` in your browser.
