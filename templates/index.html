@@ -35,6 +35,7 @@
         </div>
       </div>
       
+      <div id="postsContainer">
       <!-- Featured Post (Newest) -->
       {% if all_posts %}
       <div class="featured-post mb-5">
@@ -99,6 +100,7 @@
         </div>
       </div>
       {% endfor %}
+      </div>
 
       <!-- New Post -->
       {% if current_user.id == 1: %}

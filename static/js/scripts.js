@@ -27,54 +27,83 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 })
 
-// Search functionality
-function searchPosts() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    const postCards = document.querySelectorAll('.post-card');
-    
+// Search functionality — queries the server so all posts across every page are searched, not just the current page.
+let originalPostsHTML = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const postsContainer = document.getElementById('postsContainer');
+    if (postsContainer) {
+        originalPostsHTML = postsContainer.innerHTML;
+    }
+});
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
+
+function renderPostCard(post) {
+    const tags = post.tags && post.tags.length ? post.tags : ['Personal'];
+    const tagsHTML = tags.map(tag => `<span class="post-category">🏷️ ${escapeHtml(tag)}</span>`).join('');
+    return `
+        <div class="post-card">
+          <div class="post-content">
+            <div class="post-meta-top">
+              <span class="post-date">${escapeHtml(post.date)}</span>
+              <span class="post-author">by ${escapeHtml(post.author)}</span>
+            </div>
+            <h2 class="post-title">
+              <a href="/post/${post.id}">${escapeHtml(post.title)}</a>
+            </h2>
+            <h3 class="post-subtitle">${escapeHtml(post.subtitle)}</h3>
+            <p class="post-excerpt">${escapeHtml(post.excerpt)}</p>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="reading-time">📖 ${post.reading_time} min read</span>
+                ${tagsHTML}
+              </div>
+              <div class="post-actions">
+                <a href="/post/${post.id}" class="read-more-btn">Read More →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    `;
+}
+
+async function searchPosts() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    const postsContainer = document.getElementById('postsContainer');
+    const paginationContainer = document.querySelector('.pagination-container');
+
     if (searchTerm === '') {
-        // Show all posts if search is empty
-        postCards.forEach(card => {
-            card.style.display = 'block';
-            card.style.animation = 'fadeInUp 0.6s ease-out';
-        });
+        clearSearch();
         return;
     }
-    
-    let foundPosts = 0;
-    
-    postCards.forEach(card => {
-        const title = card.querySelector('.post-title').textContent.toLowerCase();
-        const subtitle = card.querySelector('.post-subtitle').textContent.toLowerCase();
-        const excerpt = card.querySelector('.post-excerpt').textContent.toLowerCase();
-        const author = card.querySelector('.post-author').textContent.toLowerCase();
-        
-        // Get all tags for this post
-        const tagElements = card.querySelectorAll('.post-category');
-        let tags = '';
-        tagElements.forEach(tag => {
-            tags += tag.textContent.toLowerCase() + ' ';
-        });
-        
-        if (title.includes(searchTerm) || 
-            subtitle.includes(searchTerm) || 
-            excerpt.includes(searchTerm) || 
-            author.includes(searchTerm) ||
-            tags.includes(searchTerm)) {
-            card.style.display = 'block';
+
+    if (!postsContainer) return;
+
+    try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`);
+        const results = await response.json();
+
+        if (paginationContainer) paginationContainer.style.display = 'none';
+
+        postsContainer.innerHTML = results.map(renderPostCard).join('');
+        postsContainer.querySelectorAll('.post-card').forEach(card => {
             card.style.animation = 'fadeInUp 0.6s ease-out';
-            foundPosts++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Show "no results" message if no posts found
-    showSearchResults(foundPosts, searchTerm);
+        });
+
+        showSearchResults(results.length, searchTerm);
+    } catch (error) {
+        console.error('Search failed:', error);
+    }
 }
 
 // Show search results count
-function showSearchResults(count, term) {
+function showSearchResults(count, rawTerm) {
+    const term = escapeHtml(rawTerm);
     let resultsDiv = document.getElementById('searchResults');
     if (!resultsDiv) {
         resultsDiv = document.createElement('div');
@@ -100,11 +129,20 @@ function showSearchResults(count, term) {
     }
 }
 
-// Clear search and show all posts
+// Clear search and restore the current page's posts
 function clearSearch() {
     document.getElementById('searchInput').value = '';
-    document.getElementById('searchResults').remove();
-    searchPosts();
+
+    const resultsDiv = document.getElementById('searchResults');
+    if (resultsDiv) resultsDiv.remove();
+
+    const postsContainer = document.getElementById('postsContainer');
+    if (postsContainer && originalPostsHTML !== null) {
+        postsContainer.innerHTML = originalPostsHTML;
+    }
+
+    const paginationContainer = document.querySelector('.pagination-container');
+    if (paginationContainer) paginationContainer.style.display = '';
 }
 
 // Add enter key support for search

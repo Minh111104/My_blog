@@ -317,8 +317,39 @@ def get_all_posts(page=1):
         total_pages = 0
         page = 1
     
-    return render_template("index.html", all_posts=posts, current_user=current_user, 
+    return render_template("index.html", all_posts=posts, current_user=current_user,
                          current_page=page, total_pages=total_pages)
+
+
+# Search across all posts (not just the current page)
+@app.route('/api/search')
+def search_posts():
+    query = request.args.get('q', '').strip().lower()
+    if not query:
+        return jsonify([])
+
+    result = db.session.execute(text("SELECT id, author_id, title, subtitle, date, body, img_url, tags FROM blog_posts ORDER BY id DESC"))
+    matches = []
+    for row in result:
+        post_id, author_id, title, subtitle, date, body, img_url, tags = row
+        tags = tags if tags else 'Personal'
+        author = db.session.get(User, author_id)
+        author_name = author.name if author else 'Unknown Author'
+        haystack = ' '.join([title, subtitle, body, author_name, tags]).lower()
+        if query in haystack:
+            matches.append({
+                'id': post_id,
+                'title': title,
+                'subtitle': subtitle,
+                'excerpt': clean_excerpt(body, 120),
+                'date': date,
+                'author': author_name,
+                'reading_time': reading_time(body),
+                'tags': get_tags(tags),
+                'img_url': img_url,
+            })
+    return jsonify(matches)
+
 
 # Migration route to add tags column
 @app.route('/migrate-db')
